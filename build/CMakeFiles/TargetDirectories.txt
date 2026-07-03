@@ -1,0 +1,3 @@
+/mnt/c/Users/chris/Desktop/VS Code/C++ learnign/Projects/Star Wars Fleet V2 with visuals/build/CMakeFiles/SW_V2.dir
+/mnt/c/Users/chris/Desktop/VS Code/C++ learnign/Projects/Star Wars Fleet V2 with visuals/build/CMakeFiles/edit_cache.dir
+/mnt/c/Users/chris/Desktop/VS Code/C++ learnign/Projects/Star Wars Fleet V2 with visuals/build/CMakeFiles/rebuild_cache.dir
