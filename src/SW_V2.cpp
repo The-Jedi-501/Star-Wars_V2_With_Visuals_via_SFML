@@ -58,7 +58,7 @@ I just like star wars and wanted to make a fun cool project to add to my collect
 
 //To get pictures just googled what i wanted them ships png becuase its got that cut out background if it was a fake and said it but donest do it just send to paing then save as png and then accomadate those picture chages where you see fit ie change background picutre or ships themselves 
 
-Note this code will probably be a mess since im using the old code as refernce and then changing it so it fits into uui 
+Note this code will probably be a mess since im using the old code as refernce and then changing it so it fits into uui along side this there will be alot of comments so that for future refernce if i decide to do more SFML and if anyone views this code it hopefully makes more sense as this doesnt come natually to write and has alot of parts
 */
 
 
@@ -207,16 +207,16 @@ void destroyed_in_battle(std::vector<Ship>& hangar, int position){
 }
 
 
-enum class GameState { //Were using a class to show the different screens idk 
+enum class GameState { //Were using a class to show the different screens --- enum is essentlly us having one active "GameState" at a time think Red Yellow and Green lights you will only have one at a time 
     TITLE,       // showing title + play button
     SHIP_SELECT, // picking ships screen
     ENEMY_TEAM_COMP, // For enemy comp i wnaa screen taht says to either randomize or select two "buttons" same logic as ships rancomize does logic from og code vs selct is just last screen  
     BATTLE       // the actual fight
 };
 
-GameState state = GameState::TITLE; // start on title screen
+GameState state = GameState::TITLE; // start on title screen and the syntax important saying the current state = Gamestate::the screen in question
 
-//struct is just a clean bundle so each card's data stays together, no risk of arrays drifting out of sync later. 
+//struct each Ships card ie all its contents (picture = sprite, name, stats, the box stuff is imporatant due to different sides ie Red/Blue or Sepratist/Republic logic, the key is refering to the hash I perfrom later that has all this essnlly takign teh hash i did from original code so it has all the info ther an then hen i call upon it alter its easy to jsut use.getDefense for example )
     struct ShipCard {
         sf::Sprite sprite;
         sf::Text nameText;
@@ -226,7 +226,7 @@ GameState state = GameState::TITLE; // start on title screen
         bool hovered = false;
         int shipKey;
 
-        // constructor — every member needs to exist when the card is created
+        // constructor — every member needs to exist when the card is created think of this as the blueprint for all things that will be passed inside which is the image/sprite, were passing the font since were using the SFML library and we want to say create an object in whcih will use this font to draw itself later, and key which is the hash of which derives from the ShipDataBase 
         ShipCard(sf::Texture& tex, sf::Font& font, int key)
             : sprite(tex), nameText(font), statsText(font), shipKey(key) {}
     };
@@ -235,25 +235,25 @@ GameState state = GameState::TITLE; // start on title screen
 
 int main(){
 
-// ── WINDOW ──────────────────────────────────────────────
+// --- WINDOW -----------------------------------------------
     sf::RenderWindow window( //This is like the im about to use the window function if you will 
-        sf::VideoMode({1280, 720}), //set the resoltion --- change later to say 1920x1080 but so i can analyze code make small 
+        sf::VideoMode({1280, 720}), //set the resoltion ---  DO NOT TOUCH THIS AT ALL THERE ARE ALOT OF VALUES YOU WOULD HAVE TO CHANGE YES I PROPABLY SHOULD HAVE DONE VARIBALES BUT TOO LATE
         std::string("Star Wars Battle") //this is the name at the top of the window looks like
     );
 
-// ── BACKGROUND ──────────────────────────────────────────
+// --- BACKGROUND ---------------------------------------
     //Background for main menu 
-    sf::Texture bgTexture;
-    if (!bgTexture.loadFromFile("assets/backgrounds/BattleOverCoruscant.png")) {
+    sf::Texture bgTexture; // notice anytime we do anythign visual we do sf:: think same as std:: --- this line also declares a texture ie an image will be sitting here 
+    if (!bgTexture.loadFromFile("assets/backgrounds/BattleOverCoruscant.png")) {//read the image in this case its located in a folder and everything is named to tell where it is and loads that into bgTexture adn the whole if(! ) is just a check i fpath is wrong 
         std::cerr << "Failed to load background\n";
-        return -1;  // bail out, nothing works without this
+        return -1;  // exit program immediatelyy because theres no point in contuning since i want my background
     }
     std::cerr << "Background loaded OK\n"; // add this temporarily
 
-    sf::Sprite background(bgTexture);
-    background.setScale(sf::Vector2f(
-        1280.f / bgTexture.getSize().x,
-        720.f / bgTexture.getSize().y
+    sf::Sprite background(bgTexture); //This is us taking that texture and turning it into a sprite which is just picture 
+    background.setScale(sf::Vector2f( //this is the "math" behind the background hence set scale --- If image is 1920 wide and window is 1280, scale = 1280/1920 = 0.667 — shrinks it to fit. Same logic for height. --- cool math logic --- sf::Vector2f is just a container holding 2 floats 
+        1280.f / bgTexture.getSize().x, //take that image regardless of size and fit to the scale/resolution of the window we chose above in the sf::VideoMode({1280, 720}) all about x axis 
+        720.f / bgTexture.getSize().y //Same as above but for y axis 
     ));
 
     //Background for the ship select 
@@ -270,23 +270,23 @@ int main(){
         720.f / ShipSelectTexture.getSize().y
     ));
 
-// ── FONT + TEXT — goes here, before the loop ────────────
+// --- FONT + TEXT goes here, before the loop ---------------------
     //Font
-    sf::Font font;
+    sf::Font font; //Same sort code as we do for background and safety checks 
     if (!font.openFromFile("assets/fonts/StarWarsFont.ttf")) {
         std::cerr << "Failed to load font\n";
         return -1;
     }
-    //Text for main menu 
-    sf::Text title(font);
+//Text for main menu 
+    sf::Text title(font); // think for the title i want all this stuff included (text itselt, font size, color whcih can be code or name the bounds is also important read below)
     title.setString("Star Wars Fleet Battles");
     title.setCharacterSize(36); //font size 
     title.setFillColor(sf::Color::Yellow);
-    sf::FloatRect textBounds = title.getLocalBounds();
-    title.setOrigin(sf::Vector2f(textBounds.size.x / 2.f, textBounds.size.y / 2.f));
-    title.setPosition(sf::Vector2f(640.f, 60.f)); //so this says to postion it half of the resoltion os in a 640x480 640/2=320 adn the y is something ill have to mess around with 
+    sf::FloatRect textBounds = title.getLocalBounds(); //How wide and tall is this object??? that wher elocal bound solves 
+    title.setOrigin(sf::Vector2f(textBounds.size.x / 2.f, textBounds.size.y / 2.f)); //set origin moves the "anchor point" to its one center rather than top left corner --- think when we move it do we want to "grab via middle or corner"
+    title.setPosition(sf::Vector2f(640.f, 60.f)); //setPosition puts the cento of the text at 640 rather than left edge 
 
-    //Text for Hangar
+//Text for Hangar
     sf::Text hangar_txt(font);
     hangar_txt.setString("Please Select You Ship");
     hangar_txt.setCharacterSize(28); //font size 
@@ -296,7 +296,7 @@ int main(){
     hangar_txt.setPosition(sf::Vector2f(640.f, 60.f)); //so this says to postion it half of the resoltion os in a 640x480 640/2=320 adn the y is something ill have to mess around with 
 
 
-    int RemainingShipToSelect = 3;
+    int RemainingShipToSelect = 3; // this varibale is used in game loop
 
     sf::Text hangar_Ship_Select_txt(font);
     hangar_Ship_Select_txt.setCharacterSize(20);
@@ -396,19 +396,19 @@ int main(){
     }
 
 
-    // REPUBLIC label — sits right above the first row of ships (y=150)
+// REPUBLIC label — sits right above the first row of ships (y=150)
     sf::Text republicLabel(font);
     republicLabel.setString("REPUBLIC");
     republicLabel.setCharacterSize(16);
     republicLabel.setFillColor(sf::Color(80, 150, 255)); //Blue
     republicLabel.setPosition(sf::Vector2f(90.f, 110.f));  // 40px above row 1
 
-    // Divider line — sits between row 1's text (ends ~y=280) and row 2 (starts y=400)
+// Divider line — sits between row 1's text (ends ~y=280) and row 2 (starts y=400)
     sf::RectangleShape divider;
     divider.setSize(sf::Vector2f(1100.f, 2.f));
     divider.setPosition(sf::Vector2f(90.f, 330.f));  // halfway in the gap
 
-    // SEPARATIST label — sits right above the second row of ships (y=400)
+// SEPARATIST label — sits right above the second row of ships (y=400)
     sf::Text separatistLabel(font);
     separatistLabel.setString("SEPARATIST");
     separatistLabel.setCharacterSize(16);
@@ -416,41 +416,57 @@ int main(){
     separatistLabel.setPosition(sf::Vector2f(90.f, 360.f));  // 40px above row 2
 
 
+
+//The little pop out in selction screen to show your roster
+//Approach woudl be to draw the rectangle make yellow woudl want to then just have if for what 
+
+
+
+
+
 // Card ie button for randomzer and ship select which will from a terminal code persepcte ie if i presss randomize do that 
     sf::Text RandomizerButtonLabel(font);
-    RandomizerButtonLabel.setString("Randomize");
-    RandomizerButtonLabel.setCharacterSize(16);
-    RandomizerButtonLabel.setFillColor(sf::Color::White);
-    RandomizerButtonLabel.setPosition(sf::Vector2f(280.f, 340.f));  // 40px above row 1
+        RandomizerButtonLabel.setString("Randomize");
+        RandomizerButtonLabel.setCharacterSize(20);
+        RandomizerButtonLabel.setFillColor(sf::Color::White);
+        RandomizerButtonLabel.setPosition(sf::Vector2f(280.f, 340.f));  // 40px above row 1
 
     //Buildin the Boxes for randomize then do another for manual
     sf::RectangleShape Randomizer_Button_Box;
-    Randomizer_Button_Box.setSize(sf::Vector2f(300.f, 100.f));
-    Randomizer_Button_Box.setPosition(sf::Vector2f(240.f, 300.f));
-    Randomizer_Button_Box.setFillColor(sf::Color::Transparent);
-    Randomizer_Button_Box.setOutlineThickness(3.f);
-    Randomizer_Button_Box.setOutlineColor(sf::Color::White);
-    RandomizerButtonLabel.setPosition(sf::Vector2f(280.f, 340.f)); //This es to put it at
+        Randomizer_Button_Box.setSize(sf::Vector2f(200.f, 75.f));
+        Randomizer_Button_Box.setPosition(sf::Vector2f(250.f, 315.f)); //DO NOT TOUCH THESE VALUES 
+        Randomizer_Button_Box.setFillColor(sf::Color::Transparent);
+        Randomizer_Button_Box.setOutlineThickness(3.f);
+        Randomizer_Button_Box.setOutlineColor(sf::Color::White);
 
-    sf::Text Enemy_Selection_Label(font);
-    Enemy_Selection_Label.setString("Manual");
-    Enemy_Selection_Label.setCharacterSize(16);
-    Enemy_Selection_Label.setFillColor(sf::Color::White);
-    Enemy_Selection_Label.setPosition(sf::Vector2f(790.f, 340.f));  // 40px above row 1
+    sf::RectangleShape Randomizer_Glow;
+        Randomizer_Glow.setSize(sf::Vector2f(200.f, 75.f));
+        Randomizer_Glow.setPosition(sf::Vector2f(250.f, 315.f));
+        Randomizer_Glow.setFillColor(sf::Color::Transparent);
 
-    //Buildin the Boxes for randomize then do another for manual
+    sf::RectangleShape Manual_Glow;
+        Manual_Glow.setSize(sf::Vector2f(200.f, 75.f));
+        Manual_Glow.setPosition(sf::Vector2f(740.f, 315.f));
+        Manual_Glow.setFillColor(sf::Color::Transparent);
+
+    sf::Text Enemy_Selection_Label(font); // Yea idk for some reason i codede this out of order and this has diff name idk why i did that maybe ill fix later but code works tho so 
+        Enemy_Selection_Label.setString("Manual");
+        Enemy_Selection_Label.setCharacterSize(20);
+        Enemy_Selection_Label.setFillColor(sf::Color::White);
+        Enemy_Selection_Label.setPosition(sf::Vector2f(790.f, 340.f));  // 40px above row 1
+   
     sf::RectangleShape Manual_Button_Box;
-    Manual_Button_Box.setSize(sf::Vector2f(300.f, 100.f));
-    Manual_Button_Box.setPosition(sf::Vector2f(740.f, 300.f));
-    Manual_Button_Box.setFillColor(sf::Color::Transparent);
-    Manual_Button_Box.setOutlineThickness(3.f);
-    Manual_Button_Box.setOutlineColor(sf::Color::White);
+        Manual_Button_Box.setSize(sf::Vector2f(200.f, 75.f));
+        Manual_Button_Box.setPosition(sf::Vector2f(740.f, 315.f));
+        Manual_Button_Box.setFillColor(sf::Color::Transparent);
+        Manual_Button_Box.setOutlineThickness(3.f);
+        Manual_Button_Box.setOutlineColor(sf::Color::White);
 
 //My Storage via vecotr (array)
     std::vector<Ship> My_Hangar;
     int pickCount = 0;
 
-// ── GAME LOOP ────────────────────────────────────────────
+// --- GAME LOOP --------------------------------------
 //Importatnt to know becasue we are using a real time sorta demo code we CANNOT use things like while loops or things taht keep waitign rather it needs to always be moving its odd
 //sp theres alot of stuff that goes before teh game loop thing of game loop like a pseduo main code it odd im still learning 
 
@@ -475,9 +491,10 @@ int main(){
                             My_Hangar.push_back(ShipDataBase[cards[i].shipKey]);
 
                             pickCount++;
-                            if (pickCount == 3) {
+                            if (pickCount == 3) { // for now leave here might make seperate later if i add that are you done with this screen 
                                 state = GameState::ENEMY_TEAM_COMP;
 
+                                //std::cout << "Picked: " << << "\n"; // terminal check i like this from now on keep doing stuff like this to prove the idea of waht happening 
 
 
                             }
@@ -492,13 +509,32 @@ int main(){
             }
         }
         /*next things to add make the rand or manual buttons work and use the std cout to help out there ranomize shoudl just then start game for now just maybe hit randomize then in termianl it tells me then show it 
+            - ADD THE glow affect that i did for ship select and fix the selction screen boxes there not ceneterd properly 
             - the manyal screen woudl essenlly be the select ship screen 
             - during selction screen have a little pop up thats drop down shows current roster maybe when i get max of 3 a little pop up at bottom goes are you happy with ship selection
-            - clean up code later keep it messy for now */
+            - clean up code later keep it messy for now 
+            -For real game stuff maybe enemoy on tp in on bttom and mayeb flip the all the cards so the can look at each other adn have an animaiton for shoot, shilds/ take dagame and then one for destroyed ie explostion 
+            
+    Function example for text to clean it all up     im do it later tired now first big thing to do and contiune super commenting   
+            sf::Text makeText(sf::Font& font, const std::string& str, int size, sf::Color color, float x, float y) {
+            sf::Text t(font);
+            t.setString(str);
+            t.setCharacterSize(size);
+            t.setFillColor(color);
+            sf::FloatRect b = t.getLocalBounds();
+            t.setOrigin(sf::Vector2f(b.size.x / 2.f, b.size.y / 2.f));
+            t.setPosition(sf::Vector2f(x, y));
+            return t;
+        }
+
+        sf::Text title = makeText(font, "Star Wars Fleet Battles", 36, sf::Color::Yellow, 640.f, 60.f);
+            
+            
+            */
 
     }
 
-
+//This is hover logic ie mouse sits over a desired box and i want the glow affect
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
         for (int i = 0; i < 6; i++) {
             if (cards[i].sprite.getGlobalBounds().contains(sf::Vector2f(mousePos))) {
@@ -514,6 +550,20 @@ int main(){
             else {
                 cards[i].glow.setFillColor(sf::Color::Transparent);
             }
+        }
+//Hover Logic for Randomizer Button 
+        if (Randomizer_Button_Box.getGlobalBounds().contains(sf::Vector2f(mousePos))) {
+            Randomizer_Glow.setFillColor(sf::Color(255, 255, 100, 40)); //As we seen thru code we can use color code or real names ie white
+        } 
+        else {
+            Randomizer_Glow.setFillColor(sf::Color::Transparent);
+        }
+//Hover Logic for Manual Button 
+        if (Manual_Button_Box.getGlobalBounds().contains(sf::Vector2f(mousePos))) {
+            Manual_Glow.setFillColor(sf::Color(255, 255, 100, 40));
+        } 
+        else {
+            Manual_Glow.setFillColor(sf::Color::Transparent);
         }
 
 
@@ -546,16 +596,20 @@ int main(){
             window.draw(ShipSelectPic);
             window.draw(Enemy_Selection_Comp_txt);
 
-            window.draw(RandomizerButtonLabel);
+            window.draw(Randomizer_Glow);
             window.draw(Randomizer_Button_Box);
-            window.draw(Enemy_Selection_Label);
+            window.draw(RandomizerButtonLabel);
+
+            window.draw(Manual_Glow);
             window.draw(Manual_Button_Box);
+            window.draw(Enemy_Selection_Label);
 
         }
    
         window.display();         // 3. show it
     }
 
+//EVERYTHING BELOW THIS IS ALL OLD CODE DONT NEED TO LOOK 
 
 
 
