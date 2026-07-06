@@ -206,6 +206,29 @@ void destroyed_in_battle(std::vector<Ship>& hangar, int position){
 
 }
 
+//First Function to clean up the code is the glow as a fucntion 
+sf::RectangleShape makeGlow(float x, float y, float w, float h, sf::Color color) {
+    sf::RectangleShape glow;
+    glow.setSize(sf::Vector2f(w, h));
+    glow.setPosition(sf::Vector2f(x, y));
+    glow.setFillColor(color);
+    glow.setOutlineThickness(0.f);
+    return glow;
+}
+
+
+
+sf::Text makeText(sf::Font& font, const std::string& str, int size, sf::Color color, float x, float y) {
+            sf::Text t(font);// think for the title i want all this stuff included (text itselt, font size, color whcih can be code or name the bounds is also important read below)
+            t.setString(str);
+            t.setCharacterSize(size);//font size 
+            t.setFillColor(color);
+            sf::FloatRect b = t.getLocalBounds();//How wide and tall is this object??? that wher elocal bound solves 
+            t.setOrigin(sf::Vector2f(b.size.x / 2.f, b.size.y / 2.f));//set origin moves the "anchor point" to its one center rather than top left corner --- think when we move it do we want to "grab via middle or corner"
+            t.setPosition(sf::Vector2f(x, y));//setPosition puts the cento of the text at 640 rather than left edge
+            return t;
+        }
+
 
 enum class GameState { //Were using a class to show the different screens --- enum is essentlly us having one active "GameState" at a time think Red Yellow and Green lights you will only have one at a time 
     TITLE,       // showing title + play button
@@ -278,25 +301,18 @@ int main(){
         return -1;
     }
 //Text for main menu 
-    sf::Text title(font); // think for the title i want all this stuff included (text itselt, font size, color whcih can be code or name the bounds is also important read below)
-    title.setString("Star Wars Fleet Battles");
-    title.setCharacterSize(36); //font size 
-    title.setFillColor(sf::Color::Yellow);
-    sf::FloatRect textBounds = title.getLocalBounds(); //How wide and tall is this object??? that wher elocal bound solves 
-    title.setOrigin(sf::Vector2f(textBounds.size.x / 2.f, textBounds.size.y / 2.f)); //set origin moves the "anchor point" to its one center rather than top left corner --- think when we move it do we want to "grab via middle or corner"
-    title.setPosition(sf::Vector2f(640.f, 60.f)); //setPosition puts the cento of the text at 640 rather than left edge 
+    // sf::Text title(font); // think for the title i want all this stuff included (text itselt, font size, color whcih can be code or name the bounds is also important read below)
+    // title.setString("Star Wars Fleet Battles");
+    // title.setCharacterSize(36); //font size 
+    // title.setFillColor(sf::Color::Yellow);
+    // sf::FloatRect textBounds = title.getLocalBounds(); //How wide and tall is this object??? that wher elocal bound solves 
+    // title.setOrigin(sf::Vector2f(textBounds.size.x / 2.f, textBounds.size.y / 2.f)); //set origin moves the "anchor point" to its one center rather than top left corner --- think when we move it do we want to "grab via middle or corner"
+    // title.setPosition(sf::Vector2f(640.f, 60.f)); //setPosition puts the cento of the text at 640 rather than left edge 
+
+    sf::Text title = makeText(font, "Star Wars Fleet Battles", 36, sf::Color::Yellow, 640.f, 60.f);
 
 //Text for Hangar
-    sf::Text hangar_txt(font);
-    hangar_txt.setString("Please Select You Ship");
-    hangar_txt.setCharacterSize(28); //font size 
-    hangar_txt.setFillColor(sf::Color::White);
-    sf::FloatRect hangartextBounds = hangar_txt.getLocalBounds();
-    hangar_txt.setOrigin(sf::Vector2f(hangartextBounds.size.x / 2.f, hangartextBounds.size.y / 2.f));
-    hangar_txt.setPosition(sf::Vector2f(640.f, 60.f)); //so this says to postion it half of the resoltion os in a 640x480 640/2=320 adn the y is something ill have to mess around with 
-
-
-    int RemainingShipToSelect = 3; // this varibale is used in game loop
+    sf::Text hangar_txt = makeText(font, "Please Select You Ship", 28, sf::Color::White, 640.f, 60.f);
 
     sf::Text hangar_Ship_Select_txt(font);
     hangar_Ship_Select_txt.setCharacterSize(20);
@@ -304,14 +320,15 @@ int main(){
     hangar_Ship_Select_txt.setPosition({640.f, 100.f}); 
     
 
-    //Text for Enemy Selction of team compostion 
-    sf::Text Enemy_Selection_Comp_txt(font);
-    Enemy_Selection_Comp_txt.setString("How would you like to select you opponents");
-    Enemy_Selection_Comp_txt.setCharacterSize(28); //font size 
-    Enemy_Selection_Comp_txt.setFillColor(sf::Color::White);
-    sf::FloatRect Enemy_Select_Comp_textBounds = Enemy_Selection_Comp_txt.getLocalBounds();
-    Enemy_Selection_Comp_txt.setOrigin(sf::Vector2f(Enemy_Select_Comp_textBounds.size.x / 2.f, Enemy_Select_Comp_textBounds.size.y / 2.f));
-    Enemy_Selection_Comp_txt.setPosition(sf::Vector2f(640.f, 60.f)); //so this says to postion it half of the resoltion os in a 640x480 640/2=320 adn the y is something ill have to mess around with 
+//Text for Enemy Selction of team compostion 
+    // sf::Text Enemy_Selection_Comp_txt(font);
+    // Enemy_Selection_Comp_txt.setString("How would you like to select you opponents");
+    // Enemy_Selection_Comp_txt.setCharacterSize(28); //font size 
+    // Enemy_Selection_Comp_txt.setFillColor(sf::Color::White);
+    // sf::FloatRect Enemy_Select_Comp_textBounds = Enemy_Selection_Comp_txt.getLocalBounds();
+    // Enemy_Selection_Comp_txt.setOrigin(sf::Vector2f(Enemy_Select_Comp_textBounds.size.x / 2.f, Enemy_Select_Comp_textBounds.size.y / 2.f));
+    // Enemy_Selection_Comp_txt.setPosition(sf::Vector2f(640.f, 60.f)); //so this says to postion it half of the resoltion os in a 640x480 640/2=320 adn the y is something ill have to mess around with 
+    sf::Text Enemy_Selection_Comp_txt = makeText(font, "How would you like to select you opponents", 28, sf::Color::White, 640.f, 60.f);
 
 
 //- WE GOT THE STATS----------------
@@ -363,7 +380,7 @@ int main(){
         ));
         cards[i].sprite.setPosition(sf::Vector2f(x, y));
 
-        cards[i].box.setSize(sf::Vector2f(190.f, 140.f));
+        cards[i].box.setSize(sf::Vector2f(240.f, 165.f));
         cards[i].box.setPosition(sf::Vector2f(x - 5.f, y - 5.f));
         cards[i].box.setFillColor(sf::Color::Transparent);
         cards[i].box.setOutlineThickness(3.f);
@@ -374,8 +391,11 @@ int main(){
             cards[i].box.setOutlineColor(sf::Color(255, 80, 80));  // red for Separatist
         }
 
-        cards[i].glow.setSize(sf::Vector2f(200.f, 160.f));
-        cards[i].glow.setPosition(sf::Vector2f(x - 20.f, y - 20.f));
+        cards[i].glow.setSize(sf::Vector2f(
+            cards[i].box.getSize().x,
+            cards[i].box.getSize().y
+        ));
+        cards[i].glow.setPosition(sf::Vector2f(x - 5.f, y - 5.f));
         cards[i].glow.setFillColor(sf::Color::Transparent);
 
 
@@ -425,6 +445,7 @@ int main(){
 
 
 // Card ie button for randomzer and ship select which will from a terminal code persepcte ie if i presss randomize do that 
+
     sf::Text RandomizerButtonLabel(font);
         RandomizerButtonLabel.setString("Randomize");
         RandomizerButtonLabel.setCharacterSize(20);
@@ -462,82 +483,111 @@ int main(){
         Manual_Button_Box.setOutlineThickness(3.f);
         Manual_Button_Box.setOutlineColor(sf::Color::White);
 
-//My Storage via vecotr (array)
+
+
+//The POP OUT/SLIDE OUT of current Roster
+sf::Clock animClock;
+
+    float Roster_Inital_Height = 0.f;    //Current height Starts Closed --- Starts closed makes sense 
+    float Roster_Final_Height = 0.f;     //The desired height were sliding into --- 
+    bool rosterOpen = false;            // is the panel open or closed
+
+    sf::RectangleShape rosterTab;
+        rosterTab.setSize(sf::Vector2f(100.f, 30.f));
+        rosterTab.setPosition(sf::Vector2f(25.f, 680.f));
+        rosterTab.setFillColor(sf::Color::Transparent);
+        rosterTab.setOutlineThickness(2.f);
+        rosterTab.setOutlineColor(sf::Color::Yellow);
+
+    sf::Text rosterTabLabel(font);
+        rosterTabLabel.setString("Roster:");
+        rosterTabLabel.setCharacterSize(14);
+        rosterTabLabel.setFillColor(sf::Color::Yellow);
+        rosterTabLabel.setPosition(sf::Vector2f(42.f, 685.f));
+
+    sf::RectangleShape rosterPanel;
+        rosterPanel.setFillColor(sf::Color(0, 0, 0, 180)); // semi transparent black
+        rosterPanel.setOutlineThickness(2.f);
+        rosterPanel.setOutlineColor(sf::Color::Yellow);
+
+
+
+//Glow for Roster --- the function needs to have the: postion width and height, size width/height, color i did number here 
+    sf::RectangleShape rosterGlow = makeGlow(25.f, 680.f, 100.f, 30.f, sf::Color(255, 255, 100, 30)); 
+
+
+//My Storage via vector (array) all the basic varibales place here 
     std::vector<Ship> My_Hangar;
     int pickCount = 0;
 
+    int RemainingShipToSelect = 3; // this varibale is used in game loop
 // --- GAME LOOP --------------------------------------
 //Importatnt to know becasue we are using a real time sorta demo code we CANNOT use things like while loops or things taht keep waitign rather it needs to always be moving its odd
 //sp theres alot of stuff that goes before teh game loop thing of game loop like a pseduo main code it odd im still learning 
 
     while (window.isOpen()) {
-        //NGL No idea ask Claude
         while (const std::optional<sf::Event> event = window.pollEvent()) {
-            if (event->is<sf::Event::Closed>())
-            window.close();
-
-
-        // when they click anywhere for now, switch to ship select
-        if (event->is<sf::Event::MouseButtonPressed>()){
-            state = GameState::SHIP_SELECT;
-
-            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-
             if (event->is<sf::Event::MouseButtonPressed>()) {
-                for (int i = 0; i < 6; i++) {
-                    hangar_Ship_Select_txt.setString("Ships Remaining: " + std::to_string(RemainingShipToSelect));
-                    if (cards[i].sprite.getGlobalBounds().contains(sf::Vector2f(mousePos))) {
-                        if (pickCount < 3) {
-                            My_Hangar.push_back(ShipDataBase[cards[i].shipKey]);
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
 
-                            pickCount++;
-                            if (pickCount == 3) { // for now leave here might make seperate later if i add that are you done with this screen 
-                                state = GameState::ENEMY_TEAM_COMP;
+                if (state == GameState::TITLE) {
+                    state = GameState::SHIP_SELECT;
+                }
 
-                                //std::cout << "Picked: " << << "\n"; // terminal check i like this from now on keep doing stuff like this to prove the idea of waht happening 
+                else if (state == GameState::SHIP_SELECT) {
+                    // roster tab toggle
+                    if (rosterTab.getGlobalBounds().contains(sf::Vector2f(mousePos))) {
+                        rosterOpen = !rosterOpen;
+                        Roster_Final_Height = rosterOpen ? std::max(60.f, (float)My_Hangar.size() * 50.f) : 0.f;
+                    }
+                    // ship picking
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                    
+                    for (int i = 0; i < 6; i++) {
+                        
+                        if (cards[i].box.getGlobalBounds().contains(sf::Vector2f(mousePos))) {
+                            if (pickCount < 3) {
+                                My_Hangar.push_back(ShipDataBase[cards[i].shipKey]);
+                                pickCount++;
+                                std::cout << "Picked: " << cards[i].nameText.getString().toAnsiString() << "\n";
 
+                                if (pickCount == 3){
+                                    state = GameState::ENEMY_TEAM_COMP;
+                                }
+                                RemainingShipToSelect--;
 
+                                Roster_Final_Height = rosterOpen ? std::max(60.f, (float)My_Hangar.size() * 50.f) : 0.f;
+                                
+                                
+                                
                             }
-
-                            RemainingShipToSelect--;
-
-                            std::cout << "Picked: " << cards[i].nameText.getString().toAnsiString() << "\n"; // terminal check i like this from now on keep doing stuff like this to prove the idea of waht happening 
-                            
                         }
                     }
                 }
+
+                else if (state == GameState::ENEMY_TEAM_COMP) {
+                    // button clicks go here later
+                }
             }
-        }
+
+        
         /*next things to add make the rand or manual buttons work and use the std cout to help out there ranomize shoudl just then start game for now just maybe hit randomize then in termianl it tells me then show it 
-            - ADD THE glow affect that i did for ship select and fix the selction screen boxes there not ceneterd properly 
             - the manyal screen woudl essenlly be the select ship screen 
             - during selction screen have a little pop up thats drop down shows current roster maybe when i get max of 3 a little pop up at bottom goes are you happy with ship selection
             - clean up code later keep it messy for now 
             -For real game stuff maybe enemoy on tp in on bttom and mayeb flip the all the cards so the can look at each other adn have an animaiton for shoot, shilds/ take dagame and then one for destroyed ie explostion 
             
-    Function example for text to clean it all up     im do it later tired now first big thing to do and contiune super commenting   
-            sf::Text makeText(sf::Font& font, const std::string& str, int size, sf::Color color, float x, float y) {
-            sf::Text t(font);
-            t.setString(str);
-            t.setCharacterSize(size);
-            t.setFillColor(color);
-            sf::FloatRect b = t.getLocalBounds();
-            t.setOrigin(sf::Vector2f(b.size.x / 2.f, b.size.y / 2.f));
-            t.setPosition(sf::Vector2f(x, y));
-            return t;
-        }
-
-        sf::Text title = makeText(font, "Star Wars Fleet Battles", 36, sf::Color::Yellow, 640.f, 60.f);
-            
             
             */
+    } 
 
-    }
-
-//This is hover logic ie mouse sits over a desired box and i want the glow affect
+//Think of this section as the updates as we go ie getting boxes to glow, or the dynamics box for roster --- there is no real animate command hence this section
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+
+        hangar_Ship_Select_txt.setString("Ships Remaining: " + std::to_string(RemainingShipToSelect));
+
         for (int i = 0; i < 6; i++) {
-            if (cards[i].sprite.getGlobalBounds().contains(sf::Vector2f(mousePos))) {
+            if (cards[i].box.getGlobalBounds().contains(sf::Vector2f(mousePos))) {
                 if (cards[i].shipKey <= 3) {
                         cards[i].glow.setFillColor(sf::Color(80, 150, 255, 60));  // blue glow
                 } 
@@ -565,7 +615,23 @@ int main(){
         else {
             Manual_Glow.setFillColor(sf::Color::Transparent);
         }
+//Hover logic for Roster
+        if (rosterTab.getGlobalBounds().contains(sf::Vector2f(mousePos))) {
+            rosterGlow.setFillColor(sf::Color(255, 255, 100, 40));
+        } else {
+            rosterGlow.setFillColor(sf::Color::Transparent);
+        }
+//Logic for Roster slide out 
+        float dt = animClock.restart().asSeconds();
+        float speed = 300.f * dt;
 
+        if (std::abs(Roster_Inital_Height - Roster_Final_Height) < speed) {
+            Roster_Inital_Height = Roster_Final_Height;
+        } else if (Roster_Inital_Height < Roster_Final_Height) {
+            Roster_Inital_Height += speed;
+        } else {
+            Roster_Inital_Height -= speed;
+        }
 
         window.clear();
 
@@ -582,6 +648,33 @@ int main(){
             window.draw(divider);   
             window.draw(republicLabel);    
             window.draw(separatistLabel);
+
+            window.draw(rosterGlow); //NOTE glows are alwsys first 
+            window.draw(rosterTab);
+            window.draw(rosterTabLabel);
+
+            if (Roster_Inital_Height < 10.f) {  // only show tab when panel is basically closed
+                window.draw(rosterTab);
+                window.draw(rosterTabLabel);
+            }
+            if (Roster_Inital_Height > 1.f) {
+                window.draw(rosterPanel);
+                if (My_Hangar.empty()) {
+                    sf::Text empty_message = makeText(font,"You have no ships", 15, sf::Color::White, 250.f, 690.f);
+                    window.draw(empty_message);
+                } else {
+                    for (int i = 0; i < (int)My_Hangar.size(); i++) {
+                        sf::Text shipEntry(font);
+                        shipEntry.setString(My_Hangar[i].getName());
+                        shipEntry.setCharacterSize(14);
+                        shipEntry.setFillColor(sf::Color::White);
+                        shipEntry.setPosition(sf::Vector2f(150.f, 700.f - Roster_Inital_Height + (i * 45.f)));
+                        window.draw(shipEntry);
+                    }
+                }
+            }
+
+
             
             for (int i = 0; i < 6; i++) { //This loop actlly puts all that ship stuff up for printing if you will to display
                 window.draw(cards[i].glow);
@@ -608,7 +701,47 @@ int main(){
    
         window.display();         // 3. show it
     }
+/*The overall template I need to follow in order to get this workign 
+int main()
+{
+    // 1. Initialization
+    // --------------------------------
+    // Window
+    // Textures
+    // Fonts
+    // Sprites
+    // Text
+    // Buttons
+    // Ship cards
+    // Variables
+    // Vectors
 
+    while (window.isOpen())
+    {
+        // 2. Handle Events
+        // --------------------------------
+        // mouse clicks
+        // keyboard
+        // change GameState
+        // pick ships
+
+        // 3. Update
+        // --------------------------------
+        // hover effects
+        // animations
+        // text updates
+        // roster animation
+        // glow colors
+
+        // 4. Draw
+        // --------------------------------
+        window.clear();
+
+        // draw according to GameState
+
+        window.display();
+    }
+}*/
 //EVERYTHING BELOW THIS IS ALL OLD CODE DONT NEED TO LOOK 
 
 
@@ -769,5 +902,6 @@ while(!My_Hangar.empty() && !Enemy_Hangar.empty()){ // Checking if the vectors a
 
     return 0;
 }
+
       
 
